@@ -19,6 +19,7 @@ java -jar ip2email.jar
 ## Windows Service
 - download apache daemon
   [prunsrv](https://downloads.apache.org/commons/daemon/binaries/windows/)
+- setup JAVA_HOME environment
 - create system service in windows  [run success only once]  
 **Run in cmd or powershell with administrator privilege**
 ```shell
