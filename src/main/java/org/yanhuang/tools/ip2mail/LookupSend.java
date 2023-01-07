@@ -134,6 +134,7 @@ public class LookupSend {
 			msg.setSentDate(new Date());
 
 			msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail, false));
+			System.out.println(LocalDateTime.now());
 			System.out.println("Message is ready");
 			System.out.println("------------------------------------------------------------");
 			System.out.println(body);
