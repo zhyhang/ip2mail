@@ -20,7 +20,7 @@ java -jar ip2email.jar
 - download apache daemon
   [prunsrv](https://downloads.apache.org/commons/daemon/binaries/windows/)
 - create system service in windows  [run success only once]  
-**Run in cmd or powershell with Administer privilege**
+**Run in cmd or powershell with administrator privilege**
 ```shell
 path_to\prunsrv.exe install your_service_name --DisplayName="your_service_dispaly_name" --Description="your_service_dispaly_description" --Startup=auto --StartMode=Java --StartClass=org.yanhuang.tools.ip2mail.LookupSend --Classpath	="absolution_path_to\ip2email.jar" --StartPath="working_directory" --LogPath="absolution_path_to_prunsrv_service"
 ```
