@@ -21,6 +21,7 @@
 	</dependencies>
 
 	<build>
+		<finalName>ip2email</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -44,9 +45,15 @@
 					</execution>
 				</executions>
 				<configuration>
+					<archive>
+						<manifest>
+							<mainClass>org.yanhuang.tools.ip2mail.LookupSend</mainClass>
+						</manifest>
+					</archive>
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
+					<appendAssemblyId>false</appendAssemblyId>
 				</configuration>
 			</plugin>
 		</plugins>

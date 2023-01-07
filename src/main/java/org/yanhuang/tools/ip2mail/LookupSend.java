@@ -1,4 +1,4 @@
-package org.yanghuang.tools.ip2mail;
+package org.yanhuang.tools.ip2mail;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
