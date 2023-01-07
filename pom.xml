@@ -21,7 +21,7 @@
 	</dependencies>
 
 	<build>
-		<finalName>ip2email</finalName>
+		<finalName>ip2mail</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
