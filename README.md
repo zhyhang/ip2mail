@@ -4,7 +4,7 @@
 - Any following condition occur will send email:
   - firstly run
   - ips changed
-  - exceeding 6 hours from last sent
+  - exceeding 12 hours from last sent
 
 ## Build
 ```shell

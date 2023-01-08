@@ -11,15 +11,12 @@ import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Objects;
 import java.util.Properties;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class LookupSend {
@@ -27,10 +24,9 @@ public class LookupSend {
 	private static final String FROM_EMAIL = "zhyhang_mail@tom.com";
 	private static final String FROM_PASS = "your_password";
 	private static final String TO_EMAILS = "zhyhang_mail@tom.com,zhyhang1978@gmail.com";
-	private static final String JAVA_IO_TMPDIR_KEY = "java.io.tmpdir";
-	private static final Path FILE_LAST_IP_LIST = Paths.get(System.getProperty(JAVA_IO_TMPDIR_KEY), ".ip-list-lookup" +
-			"-send");
-	public static final int HOURS_FORCE_SEND = 6;
+	private static final String JAVA_IO_TMPDIR = System.getProperty("java.io.tmpdir","/tmp");
+	private static final Path FILE_LAST_IP_LIST = Path.of(JAVA_IO_TMPDIR, ".ip-list-lookup-send");
+	private static final int HOURS_FORCE_SEND = 12;
 	private static final Properties MAIL_SERVER_PROP = new Properties();
 
 	static {
@@ -50,24 +46,28 @@ public class LookupSend {
 		}
 	}
 
-	private static final ScheduledExecutorService SES = Executors.newSingleThreadScheduledExecutor();
-
 	private static LocalDateTime lastSendTime = LocalDateTime.now().minusDays(1);
 
 	public static void main(String[] args) {
 		System.out.format("log file in %s\n", Toolkit.getLogFilePath(LocalDateTime.now()));
-		Toolkit.redirectSysOutByTime(System.currentTimeMillis());
-		SES.scheduleWithFixedDelay(() -> {
-			try {
-				scheduleTask();
-			} catch (Exception e) {
-				e.printStackTrace();
+		try {
+			TimeUnit.MINUTES.sleep(1);
+			while (true) {
+				lookupSend();
+				TimeUnit.MINUTES.sleep(5);
 			}
-		}, 1, 5, TimeUnit.MINUTES);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
-	private static void scheduleTask() throws IOException {
-		ipListSend(lastSendTime.until(LocalDateTime.now(), ChronoUnit.HOURS) > HOURS_FORCE_SEND);
+	private static void lookupSend() {
+		try {
+			Toolkit.redirectSysOutByTime(System.currentTimeMillis());
+			ipListSend(lastSendTime.until(LocalDateTime.now(), ChronoUnit.HOURS) > HOURS_FORCE_SEND);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	private static void ipListSend(boolean forceSend) throws IOException {
@@ -103,6 +103,8 @@ public class LookupSend {
 	}
 
 	private static void sendEmail(String msg) {
+		System.out.println();
+		System.out.println("------------------------------------------------------------");
 		System.out.println("TLSEmail Start");
 		//create Authenticator object to pass in Session.getInstance argument
 		final Authenticator auth = new Authenticator() {
@@ -122,25 +124,17 @@ public class LookupSend {
 			msg.addHeader("Content-type", "text/HTML; charset=UTF-8");
 			msg.addHeader("format", "flowed");
 			msg.addHeader("Content-Transfer-Encoding", "8bit");
-
 			msg.setFrom(new InternetAddress(FROM_EMAIL, "My Self"));
-
 			msg.setReplyTo(InternetAddress.parse("no_reply@example.com", false));
-
 			msg.setSubject(subject, "UTF-8");
-
 			msg.setText(body, "UTF-8");
-
 			msg.setSentDate(new Date());
-
 			msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail, false));
 			System.out.println(LocalDateTime.now());
 			System.out.println("Message is ready");
-			System.out.println("------------------------------------------------------------");
 			System.out.println(body);
-			System.out.println("------------------------------------------------------------");
 			Transport.send(msg);
-			System.out.println("EMail Sent Successfully!!");
+			System.out.println("EMail sent successfully!!");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
