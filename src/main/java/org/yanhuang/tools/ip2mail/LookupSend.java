@@ -64,6 +64,7 @@ public class LookupSend {
 	private static void lookupSend() {
 		try {
 			Toolkit.redirectSysOutByTime(System.currentTimeMillis());
+			System.out.println("last ip list saved to: " + FILE_LAST_IP_LIST);
 			ipListSend(lastSendTime.until(LocalDateTime.now(), ChronoUnit.HOURS) > HOURS_FORCE_SEND);
 		} catch (Exception e) {
 			e.printStackTrace();
