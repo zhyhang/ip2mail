@@ -49,7 +49,7 @@ public class LookupSend {
 	private static LocalDateTime lastSendTime = LocalDateTime.now().minusDays(1);
 
 	public static void main(String[] args) {
-		System.out.format("log file in %s\n", Toolkit.getLogFilePath(LocalDateTime.now()));
+		System.out.format("log file in %s, last ip list saved to %s\n", Toolkit.getLogFilePath(LocalDateTime.now()), FILE_LAST_IP_LIST);
 		try {
 			TimeUnit.MINUTES.sleep(1);
 			while (true) {
@@ -64,7 +64,6 @@ public class LookupSend {
 	private static void lookupSend() {
 		try {
 			Toolkit.redirectSysOutByTime(System.currentTimeMillis());
-			System.out.println("last ip list saved to: " + FILE_LAST_IP_LIST);
 			ipListSend(lastSendTime.until(LocalDateTime.now(), ChronoUnit.HOURS) > HOURS_FORCE_SEND);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -107,6 +106,7 @@ public class LookupSend {
 		System.out.println();
 		System.out.println("------------------------------------------------------------");
 		System.out.println("TLSEmail Start");
+		System.out.println("last ip list saved to " + FILE_LAST_IP_LIST);
 		//create Authenticator object to pass in Session.getInstance argument
 		final Authenticator auth = new Authenticator() {
 			//override the getPasswordAuthentication method
