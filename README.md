@@ -13,7 +13,7 @@ mvn clean package
 
 ## Run
 ```shell
-java -jar ip2email.jar
+java -jar ip2email.jar [your_sendbox_pass]
 ```
 
 ## Windows Service

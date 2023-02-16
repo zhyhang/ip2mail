@@ -1,28 +1,30 @@
 package org.yanhuang.tools.ip2mail;
 
 import javax.mail.*;
+import javax.mail.Authenticator;
+import javax.mail.PasswordAuthentication;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.net.UnknownHostException;
+import java.io.InputStreamReader;
+import java.net.*;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Objects;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class LookupSend {
 
 	private static final String FROM_EMAIL = "zhyhang_mail@tom.com";
-	private static final String FROM_PASS = "your_password";
+	private static String FROM_PASS = "your_password";
 	private static final String TO_EMAILS = "zhyhang_mail@tom.com,zhyhang1978@gmail.com";
 	private static final String JAVA_IO_TMPDIR = System.getProperty("java.io.tmpdir","/tmp");
 	private static final Path FILE_LAST_IP_LIST = Path.of(JAVA_IO_TMPDIR, ".ip-list-lookup-send");
@@ -49,6 +51,7 @@ public class LookupSend {
 	private static LocalDateTime lastSendTime = LocalDateTime.now().minusDays(1);
 
 	public static void main(String[] args) {
+		parseArgs(args);
 		System.out.format("log file in %s, last ip list saved to %s\n", Toolkit.getLogFilePath(LocalDateTime.now()), FILE_LAST_IP_LIST);
 		try {
 			TimeUnit.MINUTES.sleep(1);
@@ -58,6 +61,12 @@ public class LookupSend {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+
+	private static void parseArgs(String[] args) {
+		if (args.length > 0) {
+			FROM_PASS = args[0];
 		}
 	}
 
@@ -99,6 +108,9 @@ public class LookupSend {
 				ipList.append('\n').append(i.getHostAddress());
 			}
 		}
+		ipList.append("\n\n")
+				.append("Public ipv4\n")
+				.append(lookupPublicIp());
 		return ipList;
 	}
 
@@ -138,6 +150,22 @@ public class LookupSend {
 			System.out.println("EMail sent successfully!!");
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+
+	private static String lookupPublicIp(){
+		final String urlString = "http://checkip.amazonaws.com/";
+		final Duration timeout = Duration.ofSeconds(30);
+		final HttpClient client = HttpClient.newBuilder().connectTimeout(timeout).build();
+		final HttpRequest req = HttpRequest.newBuilder().timeout(timeout)
+				.uri(URI.create(urlString))
+				.GET()
+				.build();
+		try {
+			return client.send(req, HttpResponse.BodyHandlers.ofString()).body();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "exception";
 		}
 	}
 }
